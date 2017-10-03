@@ -2,11 +2,13 @@ package com.oa.android_workshop.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.oa.android_workshop.R;
@@ -21,6 +23,7 @@ public class LoginActivity extends Activity {
 
     private Button vLoginBtn;
     private EditText vUsername, vPassword;
+    private Switch vRememberMe;
     private RelativeLayout vProgressBar;
 
     @Override
@@ -31,6 +34,7 @@ public class LoginActivity extends Activity {
         vLoginBtn = (Button) findViewById(R.id.login_btn);
         vUsername = (EditText) findViewById(R.id.username);
         vPassword = (EditText) findViewById(R.id.password);
+        vRememberMe = (Switch) findViewById(R.id.rememberMe);
         vProgressBar = (RelativeLayout) findViewById(R.id.progress_bar);
 
         vLoginBtn.setOnClickListener(new View.OnClickListener() {
@@ -40,6 +44,14 @@ public class LoginActivity extends Activity {
                         vPassword.getText().toString().length() == 0) {
                     Toast.makeText(LoginActivity.this, "Username and Password are required", Toast.LENGTH_SHORT).show();
                 } else {
+                    if(vRememberMe.isChecked()){
+                        //Si esta seleccionado recordar usuario, guardamos las credenciales en SharedPreferences
+                        SharedPreferences settings = getSharedPreferences("UserInfo", 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("Username",vUsername.getText().toString());
+                        editor.putString("Password",vPassword.getText().toString());
+                        editor.commit();
+                    }
                     vProgressBar.setVisibility(View.VISIBLE);
                     ServiceHandler serviceHandler = new ServiceHandler(LoginActivity.this);
                     serviceHandler.doPostLogin(vUsername.getText().toString(), vPassword.getText().toString(),
